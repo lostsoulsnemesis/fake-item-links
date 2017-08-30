@@ -103,6 +103,18 @@ local function init_constants()
   ["Obliterum 9/10"]         = 678,
   ["Obliterum 10/10"]        = 679,
 
+  ["Primal Obliterum: 0/10"] = 3598,
+  ["Primal Obliterum: 1/10"] = 3599,
+  ["Primal Obliterum: 2/10"] = 3600,
+  ["Primal Obliterum: 3/10"] = 3601,
+  ["Primal Obliterum: 4/10"] = 3602,
+  ["Primal Obliterum: 5/10"] = 3603,
+  ["Primal Obliterum: 6/10"] = 3604,
+  ["Primal Obliterum: 7/10"] = 3605,
+  ["Primal Obliterum: 8/10"] = 3606,
+  ["Primal Obliterum: 9/10"] = 3607,
+  ["Primal Obliterum: 10/10"]= 3608,
+  
   ["Mythic 2"]               = 3410,
   ["Mythic 3"]               = 3411,
   ["Mythic 4"]               = 3412,
@@ -122,6 +134,8 @@ local function init_constants()
 ["Champion Equipment (685)"] = 3472,
   ["Relinquished"]           = 3573,
   ["Dauntless"]              = 3574,
+  ["Confiscated"]            = 3620,
+  ["Unsullied"]              = 3629,
  }
  
  DB = {}
@@ -150,6 +164,18 @@ local function init_constants()
   [677]  = 55,
   [678]  = 60,
   [679]  = 65,
+  
+  -- primal obliterum
+  [3599] = 5,
+  [3600] = 10,
+  [3601] = 15,
+  [3602] = 20,
+  [3603] = 25,
+  [3604] = 30,
+  [3605] = 35,
+  [3606] = 40,
+  [3607] = 45,
+  [3608] = 50,
  }
  
  C["Stats"] = {
