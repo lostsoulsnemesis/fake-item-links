@@ -1,9 +1,10 @@
--- Fake Item Links by Jadya EU-Well of Eternity
+-- Fake Item Links by Vildiesel EU-Well of Eternity
 
 local tsort, lower, tinsert = table.sort, string.lower, table.insert
 
 local addonName, addonTable = ...
 
+local L = addonTable.L
 local ng
 
 local empty_text = "|cff00ffff"..EMPTY.."|r"
@@ -39,20 +40,22 @@ local theme = {
 
 local function init_constants()
  DD = {
-  ["Quality"] = {},
-  ["Properties"] = {},
-  ["Itemlevel"] = {},
-  ["Stats"] = {},
+  [L["Quality"]] = {},
+  [L["Properties"]] = {},
+  [L["Itemlevel"]] = {},
+  [L["Stats"]] = {},
+  [L["Dungeon"]] = {},
+  [L["Affixes"]] = {},
  }
  
  C = {}
  
- C["Quality"] = {
-  ["Rare"] = 171,
-  ["Epic"] = 657,
+ C[L["Quality"]] = {
+  [ITEM_QUALITY3_DESC] = 171, -- Rare
+  [ITEM_QUALITY4_DESC] = 657, -- Epic
  }
 
- C["Properties"] = {
+ C[L["Properties"]] = {
   ["Pristine / Craft"]       = 2,
   ["Cooking Ingr."]          = 498,
   ["Raid Finder"]            = 451,
@@ -151,7 +154,7 @@ local function init_constants()
   [3332] = 30,
   [3333] = 35,
   [3334] = 40,
-  
+
   -- obliterum
   [669]  = 15,
   [670]  = 20,
@@ -178,7 +181,7 @@ local function init_constants()
   [3608] = 50,
  }
  
- C["Stats"] = {
+ C[L["Stats"]] = {
   [" Avoidance"] = 40,
   [" Leech"] = 41,
   [" Speed"] = 42,
@@ -272,6 +275,58 @@ DB.adjust_t =
  [13] = {520, 591, 630},
  [14] = {520, 609, 623},
 }
+
+ -- keystones
+ C[L["Dungeon"]] = {
+  ["Temple of the Jade Serpent"] = 2,
+  ["Stormstout Brewery"]         = 56,
+  ["Gate of the Setting Sun"]    = 57,
+  ["Shado-Pan Monastery"]        = 58,
+  ["Siege of Niuzao Temple"]     = 59,
+  ["Mogu'shan Palace"]           = 60,
+  ["Scholomance"]                = 76,
+  ["Scarlet Halls"]              = 77,
+  ["Scarlet Monastery"]          = 78,
+  ["Skyreach"]                   = 161,
+  ["Bloodmaul Slag Mines"]       = 163,
+  ["Auchindoun"]                 = 164,
+  ["Shadowmoon Burial Grounds"]  = 165,
+  ["Grimrail Depot"]             = 166,
+  ["Upper Blackrock Spire"]      = 167,
+  ["The Everbloom"]              = 168,
+  ["Iron Docks"]                 = 169,
+  ["Eye of Azshara"]             = 197,
+  ["Darkheart Thicket"]          = 198,
+  ["Black Rook Hold"]            = 199,
+  ["Halls of Valor"]             = 200,
+  ["Neltharion's Lair"]          = 206,
+  ["Vault of the Wardens"]       = 207,
+  ["Maw of Souls"]               = 208,
+  ["The Arcway"]                 = 209,
+  ["Court of Stars"]             = 210,
+  ["Return to Karazhan: Lower"]  = 227,
+  ["Cathedral of Eternal Night"] = 233,
+  ["Return to Karazhan: Upper"]  = 234,
+  ["Seat of the Triumvirate"]    = 239,
+ }
+ 
+ C[L["Affixes"]] = {
+  ["Overflowing"] = 1,
+  ["Skittish"]    = 2,
+  ["Volcanic"]    = 3,
+  ["Necrotic"]    = 4,
+  ["Teeming"]     = 5,
+  ["Raging"]      = 6,
+  ["Bolstering"]  = 7,
+  ["Sanguine"]    = 8,
+  ["Tyrannical"]  = 9,
+  ["Fortified"]   = 10,
+  ["Bursting"]    = 11,
+  ["Grievous"]    = 12,
+  ["Explosive"]   = 13,
+  ["Quaking"]     = 14,
+  ["Relentless"]  = 15,
+ }
 end
 
 local function updateLeftTooltip()
@@ -308,6 +363,24 @@ local function updateRightTooltip()
 end
 
 local function generateLink()
+
+ -- keystone 
+ if addonTable.mode == "keystone" then
+ 
+  local function get(dungeon, ...)
+   local s = C[L["Dungeon"]][dungeon.value] or "2"
+   s = s..":"..FakeItemLinksIlvlSlider.value
+     for i = 1, 3 do
+    s = s..(C[L["Affixes"]][select(i, ...).value] and (":"..C[L["Affixes"]][select(i, ...).value]) or ":0")
+   end
+   return s
+  end
+
+  resultLink = "|cffa335ee|Hkeystone:"..get(DD[L["Dungeon"]][1], DD[L["Affixes"]][1], DD[L["Affixes"]][2], DD[L["Affixes"]][3]).."|h[Keystone: "..(DD[L["Dungeon"]][1].value or "").."]|h|r"
+  updateRightTooltip()
+  return true
+ end
+ 
  local itemID = tonumber(edt:GetText())
  
  if not itemID then return end
@@ -371,6 +444,8 @@ end
 
 local function initDropDowns()
 
+ local p = mf.grp_item
+
  local w
  local base_text
  local disable
@@ -406,7 +481,7 @@ local function initDropDowns()
  end
 
  local function createDropDown(i, t, ...)
-  local f = ng:New(addonName, "Dropdown", "FakeItemLinkDD"..i, mf)
+  local f = ng:New(addonName, "Dropdown", "FakeItemLinkDD"..i, p)
   f.list = {}
   f.update_pre = dd_update_pre
   f.update_button = dd_update_button
@@ -416,7 +491,7 @@ local function initDropDowns()
   if #tab > 0 then
    f:SetPoint("TOP", tab[#tab], "BOTTOM", 0, -3)
   else
-   mf["lbl_"..t] = ng:New(addonName, "Label", nil, mf)
+   mf["lbl_"..t] = ng:New(addonName, "Label", nil, p)
    local txt = mf["lbl_"..t]
    txt:SetPoint("BOTTOMLEFT", f, "TOPLEFT", 10, 3)
    txt:SetText(t)
@@ -433,20 +508,20 @@ local function initDropDowns()
  w = 150
  disable = true
 
- createDropDown(1, "Quality", "TOPLEFT", mf, "TOPLEFT", 15, -100)
+ createDropDown(1, L["Quality"], "TOPLEFT", mf, "TOPLEFT", 15, -100)
  
  for i = 2,5 do
-  createDropDown(i, "Properties", "TOP", DD["Quality"][1], "BOTTOM", 0, -20)
+  createDropDown(i, L["Properties"], "TOP", DD[L["Quality"]][1], "BOTTOM", 0, -20)
  end
 
  for i = 6,9 do
-  createDropDown(i, "Stats", "TOP", DD["Properties"][4], "BOTTOM", 0, -20)
+  createDropDown(i, L["Stats"], "TOP", DD[L["Properties"]][4], "BOTTOM", 0, -20)
  end
 
 -- itemlevel slider
- mf.lblItemlevel = mf:CreateFontString()
+ mf.lblItemlevel = p:CreateFontString()
  mf.lblItemlevel:SetFont("Fonts\\ARIALN.ttf", 14, "")
- mf.lblItemlevel:SetText("Itemlevel: ")
+ mf.lblItemlevel:SetText(L["Itemlevel"])
  mf.lblItemlevel:SetPoint("TOPRIGHT", mf, "TOPRIGHT", -75, -100)
  
  local f = ng:New(addonName, "SliderV", "FakeItemLinksIlvlSlider", mf)
@@ -489,7 +564,7 @@ local function initDropDowns()
    
    v = math.max(0, math.min(1000, v))
    FakeItemLinksIlvlSlider:SetValue(-v)
-   
+
    updateLeftTooltip()
    generateLink()
   end
@@ -498,7 +573,7 @@ local function initDropDowns()
  
  f.edt = e
  f:SetValue(1)
- 
+
  local function btn_ilvl_onenter(f)
   GameTooltip:ClearLines()
   GameTooltip:SetOwner(f, "ANCHOR_LEFT")
@@ -516,7 +591,7 @@ local function initDropDowns()
  end
  
  local function create_ilvl_button(ilvl, tt, y)
-  local btn = ng:New(addonName, "Button", nil, mf, false)
+  local btn = ng:New(addonName, "Button", nil, p, false)
   btn:SetPoint("LEFT", f, "RIGHT", 25, y)
   btn:SetSize(25, 25)
   btn.tag = ilvl
@@ -528,15 +603,32 @@ local function initDropDowns()
   btn:SetBackdrop(ilvl_buttons_backdrop)
  end
  
+ ilvl_buttons_backdrop.bgFile = "interface\\icons\\ExpansionIcon_MistsofPandaria"
+ create_ilvl_button(450, EXPANSION_NAME4, 45)
  ilvl_buttons_backdrop.bgFile = "interface\\icons\\Achievement_Zone_Cataclysm"
- create_ilvl_button(333, EXPANSION_NAME3, 30)
+ create_ilvl_button(333, EXPANSION_NAME3, 15)
  ilvl_buttons_backdrop.bgFile = "interface\\icons\\expansionicon_wrathofthelichking"
- create_ilvl_button(160, EXPANSION_NAME2, 0)
+ create_ilvl_button(160, EXPANSION_NAME2, -15)
  ilvl_buttons_backdrop.bgFile = "interface\\icons\\Achievement_Dungeon_Outland_DungeonMaster"
- create_ilvl_button(95 , EXPANSION_NAME1, -30)
+ create_ilvl_button(95 , EXPANSION_NAME1, -45)
+ 
+ -- keystone group
+ p = mf.grp_keystone
+
+ createDropDown(1, L["Dungeon"], "TOPLEFT", mf, "TOPLEFT", 15, -100)
+ 
+ for i = 2,4 do
+  createDropDown(i, L["Affixes"], "TOP", DD[L["Dungeon"]][1], "BOTTOM", 0, -20)
+ end
 end
 
 local function resetItemlevel()
+ 
+ if addonTable.mode == "keystone" then
+  FakeItemLinksIlvlSlider:SetValue(-1)
+  return
+ end
+
  local itemID = tonumber(edt:GetText())
   
  if not itemID then return end
@@ -551,17 +643,27 @@ end
 local function resetDropDowns()
  local base_text = empty_text
  
- for _,v in pairs(DD["Quality"]) do
+ for _,v in pairs(DD[L["Quality"]]) do
   v:SetText(base_text)
   v.value = nil
  end
  
- for _,v in pairs(DD["Properties"]) do
+ for _,v in pairs(DD[L["Properties"]]) do
   v:SetText(base_text)
   v.value = nil
  end
  
- for _,v in pairs(DD["Stats"]) do
+ for _,v in pairs(DD[L["Stats"]]) do
+  v:SetText(base_text)
+  v.value = nil
+ end
+ 
+ for _,v in pairs(DD[L["Dungeon"]]) do
+  v:SetText(base_text)
+  v.value = nil
+ end
+ 
+ for _,v in pairs(DD[L["Affixes"]]) do
   v:SetText(base_text)
   v.value = nil
  end
@@ -571,11 +673,26 @@ local function resetDropDowns()
  generateLink()
 end
 
+local function setupInterface()
+ -- setup UI for item or keystone mode
+ if addonTable.mode == "keystone" then
+  --FakeItemLinksIlvlSlider:SetMinMaxValues(-500, -1)
+  mf.grp_item:Hide()
+ else -- item
+  --FakeItemLinksIlvlSlider:SetMinMaxValues(-1000, -1)
+  mf.grp_keystone:Hide()
+ end
+
+ FakeItemLinksIlvlSlider:SetValue(-1)
+ mf["grp_"..addonTable.mode]:Show()
+end
+
 local function initialize()
  if not mf then
   ng = NyxGUI("1.0")
 
   init_constants()
+  
   
   ng:Initialize(addonName, nil, nil, theme)
   
@@ -587,6 +704,13 @@ local function initialize()
   mf:SetScript("OnDragStop",  function(self) self:StopMovingOrSizing() end)
   mf:SetPoint("CENTER")
   mf:SetSize(350,400)
+  
+  mf.grp_item = CreateFrame("Frame", nil, mf)
+  mf.grp_item:SetPoint("TOPLEFT")
+  
+  mf.grp_keystone = CreateFrame("Frame", nil, mf)
+  mf.grp_keystone:SetPoint("TOPLEFT")
+  mf.grp_keystone:Hide()
   
   mf.title = mf:CreateFontString()
   mf.title:SetFont("Fonts\\MORPHEUS.ttf", 20, "OUTLINE")
@@ -603,7 +727,30 @@ local function initialize()
   right_tooltip:SetOwner(mf, "ANCHOR_NONE")
   right_tooltip:SetPoint("LEFT", mf, "RIGHT")
 
-  edt = ng:New(addonName, "Editbox", "FLEditbox", mf)
+  addonTable.mode = "item"
+  
+  mf.mode_switch = ng:New(addonName, "Button", "FakeItemLinksModeSwitchButton", mf)
+  mf.mode_switch:SetPoint("TOPRIGHT", mf, "TOPRIGHT", -10, -10)
+  mf.mode_switch:SetSize(75, 25)
+  mf.mode_switch:SetText(ENCOUNTER_JOURNAL_ITEM)
+  mf.mode_switch:SetScript("OnClick", function(self)
+    if addonTable.mode == "item" then
+     addonTable.mode = "keystone"
+     generateLink()
+     left_tooltip:Hide()
+     self:SetText(L["Keystone"])
+    else
+     addonTable.mode = "item"
+     resultLink = nil
+     resetDropDowns()
+     edt:SetText("")
+     right_tooltip:Hide()
+     self:SetText(ENCOUNTER_JOURNAL_ITEM)
+    end
+    setupInterface()
+   end)
+  
+  edt = ng:New(addonName, "Editbox", "FLEditbox", mf.grp_item)
   edt:SetPoint("TOPLEFT", mf, "TOPLEFT", 15, -45)
   edt:SetTitle(ENCOUNTER_JOURNAL_ITEM)
   edt:SetWidth(100)
@@ -633,7 +780,7 @@ local function initialize()
   
   edt.desc = ng:New(addonName, "Label", nil, edt)
   edt.desc:SetPoint("LEFT", edt, "RIGHT", 10, 0)
-  edt.desc:SetText("<-- Type an ItemID, link an Item or \ndrag an Item here")
+  edt.desc:SetText("<-- "..L["Type an ItemID, link an Item"].."\n"..L["or drag an Item here"])
   
   initDropDowns()
   
@@ -646,7 +793,7 @@ local function initialize()
   btn = ng:New(addonName, "Button", nil, mf)
   btn:SetPoint("BOTTOMLEFT", mf, "BOTTOMLEFT", 15, 15)
   btn:SetWidth(100)
-  btn:SetText("Chat Link")
+  btn:SetText(L["Chat Link"])
   btn:SetScript("OnClick", function() 
    if resultLink then
     --print(addonName.." - "..resultLink)
