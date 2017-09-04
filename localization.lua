@@ -8,7 +8,6 @@ addonTable.L = setmetatable({}, { __index = function(_, k)
                                             end})
 local L = addonTable.L
 
-
 if locale == "esES" then 
 --@localization(locale="esES", format="lua_additive_table", handle-unlocalized="english")@
 elseif locale == "esMX" then 
