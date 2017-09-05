@@ -692,8 +692,7 @@ local function initialize()
   ng = NyxGUI("1.0")
 
   init_constants()
-  
-  
+
   ng:Initialize(addonName, nil, nil, theme)
   
   mf = ng:New(addonName, "Frame", "FakeItemLinksMainframe", UIParent)
@@ -729,7 +728,7 @@ local function initialize()
 
   addonTable.mode = "item"
   
-  mf.mode_switch = ng:New(addonName, "Button", "FakeItemLinksModeSwitchButton", mf)
+  mf.mode_switch = ng:New(addonName, "Button", nil, mf)
   mf.mode_switch:SetPoint("TOPRIGHT", mf, "TOPRIGHT", -10, -10)
   mf.mode_switch:SetSize(75, 25)
   mf.mode_switch:SetText(ENCOUNTER_JOURNAL_ITEM)
