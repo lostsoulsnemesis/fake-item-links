@@ -1,4 +1,5 @@
--- Fake Item Links by Vildiesel EU-Well of Eternity
+-- Fake Item Links
+-- by Vildiesel EU-Well of Eternity
 
 local tsort, lower, tinsert = table.sort, string.lower, table.insert
 
@@ -219,7 +220,7 @@ local function init_constants()
   ["of the Fireflash"] = 459,
   ["of the Peerless"] = 460,
  }
- 
+
 -- negative ilvl modifiers
 DB.nt = {
   [518] = 100,
@@ -366,7 +367,7 @@ local function updateRightTooltip()
 end
 
 local function generateLink()
-
+ 
  -- keystone 
  if addonTable.mode == "keystone" then
  

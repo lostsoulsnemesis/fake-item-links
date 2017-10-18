@@ -4,5 +4,5 @@ enable-nolib-creation: no
 
 externals:
     libs/NyxGUI-1.0:
-        url: svn://svn.curseforge.com/wow/nyxgui-widgets/mainline/trunk
+        url: https://repos.curseforge.com/wow/nyxgui-widgets
         tag: latest
