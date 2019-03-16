@@ -8,6 +8,8 @@ local addonName, addonTable = ...
 local L = addonTable.L
 local ng
 
+local maxItemLevel = 500
+
 local empty_text = "|cff00ffff"..EMPTY.."|r"
 local mf, edt, resultLink, left_tooltip, right_tooltip
 local C, DD, DB -- constants, dropdowns and utils
@@ -64,9 +66,9 @@ local function init_constants()
   ["Mythic"]                 = 569,
   ["Warforged"]              = 1822,
   ["Empowered"]              = 648,
-  ["TWarped (660)"]          = 615,
-  ["TWarped WF (675)"]       = 645,
-  ["Timewalker (600)"]       = 602,
+  ["TWarped (138)"]          = 615,
+  ["TWarped WF (138)"]       = 645,
+  ["Timewalker (136)"]       = 602,
   ["Baleful"]                = 653,
   ["Stage 1/6"]              = 525,
   ["Stage 2/6"]              = 526,
@@ -81,7 +83,7 @@ local function init_constants()
   ["Tier 2 - Holy"]          = 586,
   ["Tier 2 - Corrupted"]     = 588,
   ["Tier 2 - Fire"]          = 590,
-  ["Trading Post M. (689)"]  = 1732,
+  ["Trading Post M. (140)"]  = 1732,
   ["Rank 1"]                 = 1673,
   --["Stage 1/9"]              = 1816,
   --["Stage 3/9"]              = 1817,
@@ -137,51 +139,57 @@ local function init_constants()
   ["Mythic 15"]              = 3536,
   ["Sunwell"]                = 3532,
 ["This Color Hurts My Eyes"] = 3533,
-["Champion Equipment (685)"] = 3472,
+["Champion Equipment (139)"] = 3472,
   ["Relinquished"]           = 3573,
   ["Dauntless"]              = 3574,
   ["Confiscated"]            = 3620,
   ["Unsullied"]              = 3629,
+  
+  ["Challenger"] = 4986,
+  ["Combatant"]  = 4985,
+  ["Rival"]  = 4987,
+  ["Duelist"]  = 4988,
+  ["Gladiator"]  = 4989,
  }
  
  DB = {}
  DB.bonus_ilvl_modifiers = {
-  [451]  = -12,
-  [171]  = 10,
-  [648]  = 45,
-  [526]  = 15,
+  [451]  = -3,
+  [171]  = 2,
+  [648]  = 5,
+  [526]  = 1,
   [527]  = 30,
-  [593]  = 45,
-  [617]  = 60,
-  [618]  = 75,
-  [3332] = 30,
-  [3333] = 35,
-  [3334] = 40,
+  [593]  = 3,
+  [617]  = 4,
+  [618]  = 6,
+  [3332] = 6,
+  [3333] = 7,
+  [3334] = 8,
 
   -- obliterum
-  [669]  = 15,
-  [670]  = 20,
-  [671]  = 25,
-  [672]  = 30,
-  [673]  = 35,
-  [674]  = 40,
-  [675]  = 45,
-  [676]  = 50,
-  [677]  = 55,
-  [678]  = 60,
-  [679]  = 65,
+  [669]  = 3,
+  [670]  = 4,
+  [671]  = 5,
+  [672]  = 6,
+  [673]  = 7,
+  [674]  = 8,
+  [675]  = 10,
+  [676]  = 12,
+  [677]  = 14,
+  [678]  = 16,
+  [679]  = 18,
   
   -- primal obliterum
-  [3599] = 5,
-  [3600] = 10,
-  [3601] = 15,
-  [3602] = 20,
-  [3603] = 25,
-  [3604] = 30,
-  [3605] = 35,
-  [3606] = 40,
-  [3607] = 45,
-  [3608] = 50,
+  [3599] = 2,
+  [3600] = 4,
+  [3601] = 6,
+  [3602] = 8,
+  [3603] = 10,
+  [3604] = 13,
+  [3605] = 18,
+  [3606] = 23,
+  [3607] = 28,
+  [3608] = 33,
  }
  
  C[L["Stats"]] = {
@@ -223,61 +231,68 @@ local function init_constants()
 
 -- negative ilvl modifiers
 DB.nt = {
-  [518] = 100,
-  [519] = 80,
-  [520] = 60,
-  [521] = 30,
-  [522] = 15,
+  [1422] = 50,
+  [1427] = 45,
+  [1437] = 35,
+  [1447] = 25,
+  [1452] = 20,
+  [518]  = 12,
+  [519]  = 10,
+  [520]  = 8,
+  [521]  = 6,
+  [522]  = 5,
+  [3543] = 3,
+  [3541] = 2,
+  [3824] = 1,
   }
 
 -- positive ilvl modifiers
 DB.pt = {
-  [622]  = 3,
-  [623]  = 6,
-  [624]  = 9,
-  [625]  = 12,
-  [626]  = 15,
-  [627]  = 18,
-  [591]  = 20,
-  [628]  = 21,
-  [629]  = 24,
-  [630]  = 27,
-  [631]  = 30,
-  [632]  = 33,
-  [553]  = 35,
-  [633]  = 36,
-  [634]  = 39,
-  [609]  = 40,
-  [635]  = 42,
-  [636]  = 45,
-  [637]  = 48,
-  [638]  = 51,
-  [639]  = 54,
-  [640]  = 57,
-  [641]  = 60,
-  [556]  = 65,
-  [557]  = 70,
-  [3440] = 110,
+  [622]  = 1,
+  [623]  = 2,
+  [624]  = 3,
+  [625]  = 4,
+  [626]  = 5,
+  [627]  = 6,
+  [591]  = 4,
+  [628]  = 7,
+  [629]  = 8,
+  [630]  = 9,
+  [631]  = 10,
+  [632]  = 11,
+  [633]  = 12,
+  [634]  = 13,
+  [635]  = 14,
+  [636]  = 15,
+  [637]  = 16,
+  [638]  = 17,
+  [639]  = 18,
+  [640]  = 19,
+  [641]  = 20,
+  [1502] = 30,
+  [1512] = 40,
+  [1522] = 50,
 }
 
 DB.adjust_t =
 {
- [-2] = {519, 609, 635},
- [-1] = {519, 632, 637},
- [1]  = {520, 634, 591},
- [2]  = {520, 609, 627},
- [3]  = {522, 625},
- [4]  = {521, 591, 623},
- [5]  = {520, 553, 591},
- [6]  = {522, 624},
- [7]  = {521, 591, 622},
- [8]  = {520, 609, 625},
- [9]  = {522, 623},
- [10] = {521, 591},
- [11] = {520, 609, 624},
- [12] = {522, 622},
- [13] = {520, 591, 630},
- [14] = {520, 609, 623},
+ [-2] = {623},
+ [-1] = {622},
+ [1]  = {3824},
+ [2]  = {3541},
+ 
+ [3]  = {3543},
+ [4]  = {3541,3541},
+ [5]  = {522},
+ [6]  = {521},
+ [7]  = {521,3824},
+ [8]  = {520},
+ [9]  = {520,3824},
+ [10] = {519},
+ [11] = {519,3824},
+ [12] = {518},
+ [13] = {518,3824},
+ [14] = {518,3541},
 }
 
  -- keystones
@@ -533,11 +548,11 @@ local function initDropDowns()
  f:SetSize(15,210)
  f.thumbTexture:SetSize(30, 30)
  f.thumbTexture:SetTexture("Interface\\Challenges\\ChallengeMode_Medal_Gold")
- f:SetMinMaxValues(-1000, -1)
+ f:SetMinMaxValues(-maxItemLevel, -1)
 
  f.text:ClearAllPoints()
  f.text:SetPoint("TOPLEFT", f, "TOPRIGHT", 10, -5)
- f.text:SetText("1000")
+ f.text:SetText(maxItemLevel)
  local hightext = ng:New(addonName, "Label", nil, f)
  hightext:ClearAllPoints()
  hightext:SetPoint("BOTTOMLEFT", f, "BOTTOMRIGHT", 10, 5)
@@ -566,7 +581,7 @@ local function initDropDowns()
    
    if not v then return end
    
-   v = math.max(0, math.min(1000, v))
+   v = math.max(0, math.min(maxItemLevel, v))
    FakeItemLinksIlvlSlider:SetValue(-v)
 
    updateLeftTooltip()
@@ -608,13 +623,13 @@ local function initDropDowns()
  end
  
  ilvl_buttons_backdrop.bgFile = "interface\\icons\\ExpansionIcon_MistsofPandaria"
- create_ilvl_button(450, EXPANSION_NAME4, 45)
+ create_ilvl_button(116, EXPANSION_NAME4, 45)
  ilvl_buttons_backdrop.bgFile = "interface\\icons\\Achievement_Zone_Cataclysm"
- create_ilvl_button(333, EXPANSION_NAME3, 15)
+ create_ilvl_button(104, EXPANSION_NAME3, 15)
  ilvl_buttons_backdrop.bgFile = "interface\\icons\\expansionicon_wrathofthelichking"
- create_ilvl_button(160, EXPANSION_NAME2, -15)
+ create_ilvl_button(92, EXPANSION_NAME2, -15)
  ilvl_buttons_backdrop.bgFile = "interface\\icons\\Achievement_Dungeon_Outland_DungeonMaster"
- create_ilvl_button(95 , EXPANSION_NAME1, -45)
+ create_ilvl_button(67 , EXPANSION_NAME1, -45)
  
  -- keystone group
  p = mf.grp_keystone
@@ -683,7 +698,7 @@ local function setupInterface()
   --FakeItemLinksIlvlSlider:SetMinMaxValues(-500, -1)
   mf.grp_item:Hide()
  else -- item
-  --FakeItemLinksIlvlSlider:SetMinMaxValues(-1000, -1)
+  --FakeItemLinksIlvlSlider:SetMinMaxValues(-maxItemLevel, -1)
   mf.grp_keystone:Hide()
  end
 
@@ -732,6 +747,7 @@ local function initialize()
 
   addonTable.mode = "item"
   
+  --[[
   mf.mode_switch = ng:New(addonName, "Button", nil, mf)
   mf.mode_switch:SetPoint("TOPRIGHT", mf, "TOPRIGHT", -10, -10)
   mf.mode_switch:SetSize(75, 25)
@@ -752,6 +768,7 @@ local function initialize()
     end
     setupInterface()
    end)
+  ]]
   
   edt = ng:New(addonName, "Editbox", "FLEditbox", mf.grp_item)
   edt:SetPoint("TOPLEFT", mf, "TOPLEFT", 15, -45)
