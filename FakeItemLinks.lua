@@ -886,13 +886,13 @@ local function initialize()
   
   local btn = ng:New(addonName, "Button", nil, mf)
   btn:SetPoint("BOTTOMRIGHT", mf, "BOTTOMRIGHT", -15, 15)
-  btn:SetWidth(100)
+  btn:SetWidth(75)
   btn:SetText(CLOSE)
   btn:SetScript("OnClick", function() mf:Hide() end)
   
   btn = ng:New(addonName, "Button", nil, mf)
   btn:SetPoint("BOTTOMLEFT", mf, "BOTTOMLEFT", 15, 15)
-  btn:SetWidth(100)
+  btn:SetWidth(75)
   btn:SetText(L["Chat Link"])
   btn:SetScript("OnClick", function() 
    if resultLink then
@@ -902,8 +902,21 @@ local function initialize()
   end)
 
   btn = ng:New(addonName, "Button", nil, mf)
-  btn:SetPoint("BOTTOM", mf, "BOTTOM", 0, 15)
-  btn:SetWidth(100)
+  btn:SetPoint("BOTTOMLEFT", mf, "BOTTOM", -78, 15)
+  btn:SetWidth(75)
+  btn:SetText(L["To Simc"])
+  btn:SetScript("OnClick", function()
+   if resultLink then
+    --print(addonName.." - "..resultLink)
+	C_ChatInfo.RegisterAddonMessagePrefix("toSimc")
+	C_ChatInfo.SendAddonMessage("toSimc",resultLink,"WHISPER", UnitName("player"))
+	mf:Hide()
+   end
+  end)
+
+  btn = ng:New(addonName, "Button", nil, mf)
+  btn:SetPoint("BOTTOM", mf, "BOTTOM", 40, 15)
+  btn:SetWidth(75)
   btn:SetText(RESET)
   btn:SetScript("OnClick", resetDropDowns)
   
