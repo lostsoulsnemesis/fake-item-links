@@ -47,6 +47,7 @@ local function init_constants()
   [L["Properties"]] = {},
   [L["Itemlevel"]] = {},
   [L["Stats"]] = {},
+  [L["Corruptions"]] = {},
   [L["Dungeon"]] = {},
   [L["Affixes"]] = {},
  }
@@ -228,6 +229,67 @@ local function init_constants()
   ["of the Fireflash"] = 459,
   ["of the Peerless"] = 460,
  }
+
+C[L["Corruptions"]] = {
+ ["Twilight Devastation (25)"] = 6537,
+ ["Twilight Devastation (50)"] = 6538,
+ ["Twilight Devastation (75)"] = 6539,
+ ["Void Ritual (15)"] = 6540,
+ ["Void Ritual (35)"] = 6541,
+ ["Void Ritual (66)"] = 6542,
+ ["Twisted Appendage (10)"] = 6543,
+ ["Twisted Appendage (35)"] = 6544,
+ ["Twisted Appendage (66)"] = 6545,
+ ["Glimpse of Clarity (15)"] = 6546,
+ ["Ineffable Truth (12)"] = 6547,
+ ["Ineffable Truth (30)"] = 6548,
+ ["Echoing Void (25)"] = 6549,
+ ["Echoing Void (35)"] = 6550,
+ ["Echoing Void (60)"] = 6551,
+ ["Infinite Stars (20)"] = 6552,
+ ["Infinite Stars (50)"] = 6553,
+ ["Infinite Stars (75)"] = 6554,
+ ["Racing Pulse (15)"] = 6555,
+ ["Deadly Momentum (15)"] = 6556,
+ ["Honed Mind (15)"] = 6557,
+ ["Surging Vitality (15)"] = 6558,
+ ["Racing Pulse (20)"] = 6559,
+ ["Racing Pulse (35)"] = 6560,
+ ["Deadly Momentum (20)"] = 6561,
+ ["Deadly Momentum (35)"] = 6562,
+ ["Honed Mind (20)"] = 6563,
+ ["Honed Mind (35)"] = 6564,
+ ["Surging Vitality (20)"] = 6565,
+ ["Surging Vitality (35)"] = 6566,
+ ["Devour Vitality (35)"] = 6567,
+ ["Whispered Truths (25)"] = 6568,
+ ["Lash of the Void (25)"] = 6569,
+ ["Flash of Insight (20)"] = 6570,
+ ["Searing Flames (30)"] = 6571,
+ ["Obsidian Skin (50)"] = 6572,
+ ["Gushing Wound (15)"] = 6573,
+ ["Avoidant (10)"] = {6455,6483},
+ ["Avoidant (15)"] = {6460,6484},
+ ["Avoidant (20)"] = {6465,6485},
+ ["Expedient (10)"] = {6455,6474},
+ ["Expedient (15)"] = {6460,6475},
+ ["Expedient (20)"] = {6465,6476},
+ ["Masterful (10)"] = {6455,6471},
+ ["Masterful (15)"] = {6460,6472},
+ ["Masterful (20)"] = {6465,6473},
+ ["Severe (10)"] = {6455,6480},
+ ["Severe (15)"] = {6460,6481},
+ ["Severe (20)"] = {6465,6482},
+ ["Versatile (10)"] = {6455,6477},
+ ["Versatile (15)"] = {6460,6478},
+ ["Versatile (20)"] = {6465,6479},
+ ["Siphoner (17)"] = {6612,6493},
+ ["Siphoner (28)"] = {6613,6494},
+ ["Siphoner (45)"] = {6614,6495},
+ ["Strikethrough (10)"] = {6455,6437},
+ ["Strikethrough (15)"] = {6460,6438},
+ ["Strikethrough (20)"] = {6465,6439},
+}
 
 -- negative ilvl modifiers
 DB.nt = {
@@ -419,11 +481,22 @@ local function generateLink()
   local text = dd.value or ""
   local bonuses = C[dd.group]
   if bonuses[text] then
-   numBonus = numBonus + 1
-   local bonus = bonuses[text]
-   s_bonus = s_bonus..":"..bonus
-   if DB.bonus_ilvl_modifiers[bonus] then
-    ilvl_modifier = ilvl_modifier + DB.bonus_ilvl_modifiers[bonus]
+   if type(bonuses[text])=="table" then
+    for i = 1, #(bonuses[text]) do
+     numBonus = numBonus + 1
+     local bonus = bonuses[text][i]
+     s_bonus = s_bonus..":"..bonus
+     if DB.bonus_ilvl_modifiers[bonus] then
+      ilvl_modifier = ilvl_modifier + DB.bonus_ilvl_modifiers[bonus]
+     end
+	end
+   else
+    numBonus = numBonus + 1
+    local bonus = bonuses[text]
+    s_bonus = s_bonus..":"..bonus
+    if DB.bonus_ilvl_modifiers[bonus] then
+	 ilvl_modifier = ilvl_modifier + DB.bonus_ilvl_modifiers[bonus]
+    end
    end
   end
  end
@@ -536,6 +609,8 @@ local function initDropDowns()
  for i = 6,9 do
   createDropDown(i, L["Stats"], "TOP", DD[L["Properties"]][4], "BOTTOM", 0, -20)
  end
+
+ createDropDown(10, L["Corruptions"], "TOP", DD[L["Stats"]][4], "BOTTOM", 0, -20)
 
 -- itemlevel slider
  mf.lblItemlevel = p:CreateFontString()
@@ -677,6 +752,11 @@ local function resetDropDowns()
   v.value = nil
  end
  
+ for _,v in pairs(DD[L["Corruptions"]]) do
+  v:SetText(base_text)
+  v.value = nil
+ end
+ 
  for _,v in pairs(DD[L["Dungeon"]]) do
   v:SetText(base_text)
   v.value = nil
@@ -721,7 +801,7 @@ local function initialize()
   mf:SetScript("OnDragStart", function(self) self:StartMoving() end)
   mf:SetScript("OnDragStop",  function(self) self:StopMovingOrSizing() end)
   mf:SetPoint("CENTER")
-  mf:SetSize(350,400)
+  mf:SetSize(350,450)
   
   mf.grp_item = CreateFrame("Frame", nil, mf)
   mf.grp_item:SetPoint("TOPLEFT")
